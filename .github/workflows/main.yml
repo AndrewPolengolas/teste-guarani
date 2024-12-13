@@ -2,9 +2,9 @@ name: CI/CD Workflow
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: ["develop"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   test-develop:
@@ -110,5 +110,4 @@ jobs:
           file: ./demo/Dockerfile
           push: true
           tags:
-            - "polengolas/teste-guarani:v${{ github.run_number }}"
-            - "polengolas/teste-guarani:latest"
+            polengolas/teste-guarani:latest
