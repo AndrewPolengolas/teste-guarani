@@ -110,5 +110,4 @@ jobs:
           file: ./demo/Dockerfile
           push: true
           tags:
-            polengolas/teste-guarani:v${{github.run_number}}
             polengolas/teste-guarani:latest
