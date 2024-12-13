@@ -106,8 +106,8 @@ jobs:
       - name: Push Docker Image
         uses: docker/build-push-action@v6.10.0
         with:
-          context: ./demo
-          file: ./demo/Dockerfile
+          context: ./
+          file: ./Dockerfile
           push: true
           tags:
             polengolas/teste-guarani:latest
