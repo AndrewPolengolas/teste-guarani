@@ -45,7 +45,6 @@ public class OrderItemService {
         OrderItem orderItem = new OrderItem();
         orderItem.setProduct(product);
         orderItem.setQuantity(orderItemRequestDTO.quantity());
-        orderItem.setItemPrice(orderItemRequestDTO.itemPrice());
 
         orderItem.setOrder(order);
 

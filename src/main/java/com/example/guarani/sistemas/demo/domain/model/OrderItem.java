@@ -20,20 +20,18 @@ public class OrderItem {
     private Product product;
 
     private int quantity;
-    private BigDecimal itemPrice; // Preço do item (pode ser diferente do preço original do produto)
     private BigDecimal totalPrice; // Preço total do item (itemPrice * quantity)
 
     public OrderItem(Order order, Product product, int quantity, BigDecimal itemPrice) {
         this.order = order;
         this.product = product;
         this.quantity = quantity;
-        this.itemPrice = itemPrice;
     }
 
     public OrderItem() {}
 
     public BigDecimal calculateTotalPrice() {
-        this.totalPrice = this.itemPrice.multiply(BigDecimal.valueOf(quantity));
+        this.totalPrice = this.product.getPrice().multiply(BigDecimal.valueOf(quantity));
         return this.totalPrice;
     }
 
@@ -67,14 +65,6 @@ public class OrderItem {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
-    }
-
-    public BigDecimal getItemPrice() {
-        return itemPrice;
-    }
-
-    public void setItemPrice(BigDecimal itemPrice) {
-        this.itemPrice = itemPrice;
     }
 
     public BigDecimal getTotalPrice() {

@@ -1,5 +1,6 @@
 package com.example.guarani.sistemas.demo.controller;
 
+import com.example.guarani.sistemas.demo.app.dto.order.OrderFilterDTO;
 import com.example.guarani.sistemas.demo.app.dto.order.OrderRequestDTO;
 import com.example.guarani.sistemas.demo.app.dto.order.OrderResponseDTO;
 import com.example.guarani.sistemas.demo.app.service.OrderService;
@@ -34,8 +35,8 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllOrders() {
-        List<OrderResponseDTO> dtos = orderService.getAllOrders();
+    public ResponseEntity<?> getAllOrders(OrderFilterDTO filter) {
+        List<OrderResponseDTO> dtos = orderService.getAllOrders(filter);
         return ResponseEntity.ok().body(dtos);
     }
 }

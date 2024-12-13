@@ -35,16 +35,20 @@ public class Order {
     public void updateTotalAmount() {
         BigDecimal total = BigDecimal.ZERO;
 
-        for (OrderItem item : items) {
-            total = total.add(item.getTotalPrice());
-        }
+        if (this.items != null){
+            for (OrderItem item : items) {
+                total = total.add(item.getTotalPrice());
+            }
 
-        // Aplica taxa de frete
-        this.totalAmount = total.add(this.shippingFee);
+            // Aplica taxa de frete
+            this.totalAmount = total.add(this.shippingFee);
+        }
     }
 
     public void addDiscount(){
-        this.totalAmount = this.totalAmount.multiply(this.discount);
+        if (this.totalAmount != null){
+            this.totalAmount = this.totalAmount.multiply(this.discount);
+        }
     }
 
     public Long getId() {

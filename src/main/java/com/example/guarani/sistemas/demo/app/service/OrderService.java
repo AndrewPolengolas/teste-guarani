@@ -1,5 +1,6 @@
 package com.example.guarani.sistemas.demo.app.service;
 
+import com.example.guarani.sistemas.demo.app.dto.order.OrderFilterDTO;
 import com.example.guarani.sistemas.demo.app.mapper.OrderMapper;
 import com.example.guarani.sistemas.demo.app.dto.order.OrderRequestDTO;
 import com.example.guarani.sistemas.demo.app.dto.order.OrderResponseDTO;
@@ -39,8 +40,21 @@ public class OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
     }
 
-    public List<OrderResponseDTO> getAllOrders() {
-        List<Order> orders = orderRepository.findAll();
+    public List<OrderResponseDTO> getAllOrders(OrderFilterDTO filter) {
+        List<Order> orders;
+
+        if (filter == null) {
+            orders = orderRepository.findAll();
+        } else {
+            orders = orderRepository.findByFilters(
+                    filter.status(),
+                    filter.startDate(),
+                    filter.endDate(),
+                    filter.minAmount(),
+                    filter.maxAmount()
+            );
+        }
+
         return orders.stream()
                 .map(orderMapper::toOrderResponseDTO)
                 .collect(Collectors.toList());
