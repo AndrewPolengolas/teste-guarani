@@ -6,7 +6,7 @@ on:
       - develop
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   test-develop:
@@ -34,8 +34,8 @@ jobs:
     - name: Run Unit Tests
       run: mvn clean test
 
-  pr-master:
-    if: github.event_name == 'pull_request' && github.base_ref == 'master'
+  pr-main:
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
     runs-on: ubuntu-latest
 
     steps:
