@@ -1,10 +1,10 @@
 package com.example.guarani.sistemas.demo.controller;
 
 import com.example.guarani.sistemas.demo.app.dto.order.OrderFilterDTO;
+import com.example.guarani.sistemas.demo.app.dto.order.OrderPaymentDTO;
 import com.example.guarani.sistemas.demo.app.dto.order.OrderRequestDTO;
 import com.example.guarani.sistemas.demo.app.dto.order.OrderResponseDTO;
 import com.example.guarani.sistemas.demo.app.service.OrderService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,5 +38,13 @@ public class OrderController {
     public ResponseEntity<?> getAllOrders(OrderFilterDTO filter) {
         List<OrderResponseDTO> dtos = orderService.getAllOrders(filter);
         return ResponseEntity.ok().body(dtos);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> closeOrderById(@PathVariable Long id,
+                                            @RequestBody OrderPaymentDTO orderPaymentDTO) {
+        OrderResponseDTO dto = orderService.closeOrderById(id, orderPaymentDTO);
+
+        return ResponseEntity.ok().body(dto);
     }
 }

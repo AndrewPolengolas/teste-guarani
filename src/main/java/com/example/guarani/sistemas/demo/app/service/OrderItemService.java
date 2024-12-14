@@ -52,6 +52,10 @@ public class OrderItemService {
 
         orderItem = orderItemRepository.save(orderItem);
 
+        order.updateTotalAmount();
+
+        orderRepository.save(order);
+
         return orderItemMapper.toOrderItemResponseDTO(orderItem);
     }
 

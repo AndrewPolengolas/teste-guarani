@@ -25,7 +25,6 @@ public class OrderMapper {
         order.getCustomer().setId(orderRequestDTO.customerId());
         order.setDiscount(orderRequestDTO.discount());
         order.setShippingFee(orderRequestDTO.shippingFee());
-        order.setStatus(orderRequestDTO.status());
 
         return order;
     }
