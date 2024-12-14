@@ -1,12 +1,10 @@
 package com.example.guarani.sistemas.demo.app.service;
 
-import com.example.guarani.sistemas.demo.app.dto.order.OrderFilterDTO;
-import com.example.guarani.sistemas.demo.app.dto.order.OrderPaymentDTO;
+import com.example.guarani.sistemas.demo.app.dto.order.*;
 import com.example.guarani.sistemas.demo.app.mapper.OrderMapper;
-import com.example.guarani.sistemas.demo.app.dto.order.OrderRequestDTO;
-import com.example.guarani.sistemas.demo.app.dto.order.OrderResponseDTO;
 import com.example.guarani.sistemas.demo.app.service.strategy.PaymentStrategy;
 import com.example.guarani.sistemas.demo.domain.enums.OrderStatus;
+import com.example.guarani.sistemas.demo.domain.enums.PaymentStatus;
 import com.example.guarani.sistemas.demo.domain.model.Order;
 import com.example.guarani.sistemas.demo.domain.repository.OrderRepository;
 import com.example.guarani.sistemas.demo.infra.config.OrderRabbitConfig;
@@ -14,6 +12,7 @@ import com.example.guarani.sistemas.demo.infra.exceptions.ResourceNotFoundExcept
 import jakarta.transaction.Transactional;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -40,8 +39,6 @@ public class OrderService {
     @Transactional
     public OrderResponseDTO createOrder(OrderRequestDTO orderRequestDTO) {
         Order order = orderMapper.toOrder(orderRequestDTO);
-        order.updateTotalAmount();
-        order.addDiscount();
         order.setStatus(OrderStatus.OPEN);
         order.setCreationDate(new Date());
         Order savedOrder = orderRepository.save(order);
@@ -61,12 +58,13 @@ public class OrderService {
         if (filter == null) {
             orders = orderRepository.findAll();
         } else {
+
             orders = orderRepository.findByFilters(
-                    filter.status(),
-                    filter.startDate(),
-                    filter.endDate(),
-                    filter.minAmount(),
-                    filter.maxAmount()
+                    filter.status() != null ? filter.status().toString() : null,
+                    filter.startDate() != null ? filter.startDate() : null,
+                    filter.endDate() != null ? filter.endDate() : null,
+                    filter.minAmount() != null ? filter.minAmount() : null,
+                    filter.maxAmount() != null ? filter.maxAmount() : null
             );
         }
 
@@ -90,4 +88,21 @@ public class OrderService {
         return orderMapper.toOrderResponseDTO(savedOrder);
     }
 
+    public void updatePayment(ProcessedOrderMessage message) {
+        Order order = orderRepository.findById(message.getOrderId()).orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + message.getOrderId()));
+
+        if (message.isSuccess()){
+            order.setStatus(OrderStatus.COMPLETED);
+            order.setPaymentDate(message.getPaymentDate());
+            order.setPaymentStatus(PaymentStatus.PAID);
+
+            orderRepository.save(order);
+        }else {
+            order.setStatus(OrderStatus.CANCELLED);
+            order.setPaymentDate(message.getPaymentDate());
+            order.setPaymentStatus(PaymentStatus.FAILED);
+
+            orderRepository.save(order);
+        }
+    }
 }

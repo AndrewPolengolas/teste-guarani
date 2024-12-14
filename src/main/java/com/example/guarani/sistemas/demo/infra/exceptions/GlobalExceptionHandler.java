@@ -2,6 +2,8 @@ package com.example.guarani.sistemas.demo.infra.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -19,6 +21,18 @@ public class GlobalExceptionHandler {
         errorDetails.put("message", ex.getMessage());
         errorDetails.put("status", HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        StringBuilder errorMessages = new StringBuilder();
+        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
+            errorMessages.append(error.getField())
+                    .append(": ")
+                    .append(error.getDefaultMessage());
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("Validation failed: " + errorMessages.toString());
     }
 
 //    @ExceptionHandler(Exception.class)

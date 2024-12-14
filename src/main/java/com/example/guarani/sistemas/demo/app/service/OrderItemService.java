@@ -53,6 +53,7 @@ public class OrderItemService {
         orderItem = orderItemRepository.save(orderItem);
 
         order.updateTotalAmount();
+        order.addDiscount();
 
         orderRepository.save(order);
 

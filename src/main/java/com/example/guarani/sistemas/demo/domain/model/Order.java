@@ -5,6 +5,8 @@ import com.example.guarani.sistemas.demo.domain.enums.PaymentStatus;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -36,6 +38,9 @@ public class Order {
     private PaymentStatus paymentStatus; // Enum: PENDING, PAID, FAILED
 
     private Date paymentDate;
+
+    @DecimalMin(value = "0.0", inclusive = true, message = "Discount must be at least 0")
+    @DecimalMax(value = "1.0", inclusive = true, message = "Discount must be at most 1.0")
     private BigDecimal discount;
     private BigDecimal shippingFee;
 
@@ -53,8 +58,11 @@ public class Order {
     }
 
     public void addDiscount(){
+        System.out.println("Adicionando disconto");
         if (this.totalAmount != null){
-            this.totalAmount = this.totalAmount.multiply(this.discount);
+            BigDecimal discount = this.totalAmount.multiply(this.discount);
+
+            this.totalAmount = this.totalAmount.subtract(discount);
         }
     }
 

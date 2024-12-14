@@ -8,23 +8,23 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    @Query("SELECT o FROM Order o WHERE " +
-            "(:status IS NULL OR o.status = :status) AND " +
-            "(:startDate IS NULL OR o.creationDate >= :startDate) AND " +
-            "(:endDate IS NULL OR o.creationDate <= :endDate) AND " +
-            "(:minAmount IS NULL OR o.totalAmount >= :minAmount) AND " +
-            "(:maxAmount IS NULL OR o.totalAmount <= :maxAmount)")
+    @Query(value = "SELECT * FROM customer_order o " +
+            " WHERE 1 = 1 " +
+            " AND (o.status LIKE :status OR :status IS NULL) " +
+            " AND (o.creation_date BETWEEN :startDate AND :endDate OR(:startDate IS NULL AND :endDate IS NULL)) " +
+            " AND (o.total_amount BETWEEN :minAmount AND :maxAmount OR(:minAmount IS NULL AND :maxAmount IS NULL)) ", nativeQuery = true)
     List<Order> findByFilters(
-            @Param("status") OrderStatus status,
-            @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate,
+            @Param("status") String status,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
             @Param("minAmount") BigDecimal minAmount,
             @Param("maxAmount") BigDecimal maxAmount
     );
+
 }

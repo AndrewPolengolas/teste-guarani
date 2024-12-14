@@ -30,9 +30,6 @@ public class OrderMapper {
     }
 
     public OrderResponseDTO toOrderResponseDTO(Order order) {
-
-        order.updateTotalAmount();
-
         return new OrderResponseDTO(
                 order.getId(),
                 order.getCustomer().getId(),

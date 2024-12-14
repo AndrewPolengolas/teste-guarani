@@ -5,6 +5,7 @@ import com.example.guarani.sistemas.demo.app.dto.order.OrderPaymentDTO;
 import com.example.guarani.sistemas.demo.app.dto.order.OrderRequestDTO;
 import com.example.guarani.sistemas.demo.app.dto.order.OrderResponseDTO;
 import com.example.guarani.sistemas.demo.app.service.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createOrder(@RequestBody OrderRequestDTO orderRequestDTO) {
+    public ResponseEntity<?> createOrder(@Valid @RequestBody OrderRequestDTO orderRequestDTO) {
         OrderResponseDTO dto = orderService.createOrder(orderRequestDTO);
 
         return ResponseEntity.status(201).body(dto);
@@ -35,7 +36,7 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllOrders(OrderFilterDTO filter) {
+    public ResponseEntity<?> getAllOrders(@RequestBody OrderFilterDTO filter) {
         List<OrderResponseDTO> dtos = orderService.getAllOrders(filter);
         return ResponseEntity.ok().body(dtos);
     }
