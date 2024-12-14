@@ -25,20 +25,18 @@ public class OrderMapper {
         order.getCustomer().setId(orderRequestDTO.customerId());
         order.setDiscount(orderRequestDTO.discount());
         order.setShippingFee(orderRequestDTO.shippingFee());
-        order.setStatus(orderRequestDTO.status());
 
-        order.setItems(orderRequestDTO.productIds().stream()
-                .map(productId -> new OrderItem(null, null, 1, BigDecimal.ZERO))
-                .collect(Collectors.toList())
-        );
         return order;
     }
 
     public OrderResponseDTO toOrderResponseDTO(Order order) {
+
+        order.updateTotalAmount();
+
         return new OrderResponseDTO(
                 order.getId(),
                 order.getCustomer().getId(),
-                order.getItems().stream().map(orderItemMapper::toOrderItemResponseDTO).collect(Collectors.toList()),
+                order.getItems() != null ? order.getItems().stream().map(orderItemMapper::toOrderItemResponseDTO).collect(Collectors.toList()) : null,
                 order.getTotalAmount(),
                 order.getDiscount(),
                 order.getShippingFee(),

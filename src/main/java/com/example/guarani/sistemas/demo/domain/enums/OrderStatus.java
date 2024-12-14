@@ -1,7 +1,8 @@
 package com.example.guarani.sistemas.demo.domain.enums;
 
 public enum OrderStatus {
-    PENDING,
+    OPEN,
     COMPLETED,
+    WAITING_PAYMENT,
     CANCELLED
 }

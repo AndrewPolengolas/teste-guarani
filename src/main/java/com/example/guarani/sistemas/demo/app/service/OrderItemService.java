@@ -45,13 +45,16 @@ public class OrderItemService {
         OrderItem orderItem = new OrderItem();
         orderItem.setProduct(product);
         orderItem.setQuantity(orderItemRequestDTO.quantity());
-        orderItem.setItemPrice(orderItemRequestDTO.itemPrice());
 
         orderItem.setOrder(order);
 
         orderItem.calculateTotalPrice();
 
         orderItem = orderItemRepository.save(orderItem);
+
+        order.updateTotalAmount();
+
+        orderRepository.save(order);
 
         return orderItemMapper.toOrderItemResponseDTO(orderItem);
     }

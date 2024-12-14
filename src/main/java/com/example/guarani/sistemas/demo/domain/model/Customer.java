@@ -1,5 +1,7 @@
 package com.example.guarani.sistemas.demo.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -15,6 +17,7 @@ public class Customer {
     private String phoneNumber;
 
     @OneToMany(mappedBy = "customer")
+    @JsonManagedReference
     private List<Order> orders;
 
     public Long getId() {

@@ -5,6 +5,7 @@ import com.example.guarani.sistemas.demo.domain.enums.OrderStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 public record OrderResponseDTO(
@@ -15,5 +16,5 @@ public record OrderResponseDTO(
         BigDecimal discount,
         BigDecimal shippingFee,
         OrderStatus status,
-        LocalDateTime creationDate
+        Date creationDate
 ) {}

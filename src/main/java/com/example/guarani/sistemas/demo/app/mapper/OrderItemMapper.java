@@ -13,7 +13,7 @@ public class OrderItemMapper {
                 orderItem.getProduct().getId(),
                 orderItem.getProduct().getName(),
                 orderItem.getQuantity(),
-                orderItem.getItemPrice(),
+                orderItem.getProduct().getPrice(),
                 orderItem.getTotalPrice()
         );
     }

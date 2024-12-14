@@ -9,6 +9,5 @@ public record OrderRequestDTO(
         Long customerId,
         List<Long> productIds,
         BigDecimal discount,
-        BigDecimal shippingFee,
-        OrderStatus status
+        BigDecimal shippingFee
 ) {}
