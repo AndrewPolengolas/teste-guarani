@@ -3,7 +3,7 @@
 
 ## Descrição do Projeto
 
-Este projeto é uma API RESTful para um sistema de gerenciamento de pedidos de uma loja online. Ele oferece funcionalidades como CRUD de pedidos e produtos, cálculo de preços, autenticação e autorização com perfis de usuário, integração de pagamentos e mais. Também há um microsserviço auxiliar para simular pagamentos.
+Este projeto é uma API RESTful para um sistema de gerenciamento de pedidos de uma loja online. Ele oferece funcionalidades como CRUD de pedidos e produtos, cálculo de preços, autenticação e autorização com perfis de usuário, integração de pagamentos e mais. Também há um microsserviço auxiliar para simular pagamentos. Toda a documentação do Swagger foi redigida em inglês para atender as melhores praticas de desenvolvimento;
 
 ## Tecnologias Utilizadas
 
