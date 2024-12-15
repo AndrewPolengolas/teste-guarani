@@ -1,9 +1,15 @@
 package com.example.guarani.sistemas.demo.domain.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "roles")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Role {
 
     @Id
@@ -12,20 +18,4 @@ public class Role {
     private Long roleId;
 
     private String name;
-
-    public Long getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(Long roleId) {
-        this.roleId = roleId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

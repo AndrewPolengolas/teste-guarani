@@ -2,11 +2,17 @@ package com.example.guarani.sistemas.demo.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "order_item")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,58 +28,10 @@ public class OrderItem {
     private Product product;
 
     private int quantity;
-    private BigDecimal totalPrice; // Preço total do item (itemPrice * quantity)
-
-    public OrderItem(Order order, Product product, int quantity, BigDecimal itemPrice) {
-        this.order = order;
-        this.product = product;
-        this.quantity = quantity;
-    }
-
-    public OrderItem() {}
+    private BigDecimal totalPrice;
 
     public BigDecimal calculateTotalPrice() {
         this.totalPrice = this.product.getPrice().multiply(BigDecimal.valueOf(quantity));
         return this.totalPrice;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public BigDecimal getTotalPrice() {
-        return totalPrice != null ? totalPrice : calculateTotalPrice();
-    }
-
-    public void setTotalPrice(BigDecimal totalPrice) {
-        this.totalPrice = totalPrice;
     }
 }

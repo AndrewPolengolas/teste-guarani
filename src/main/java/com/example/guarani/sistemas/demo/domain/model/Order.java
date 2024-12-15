@@ -7,6 +7,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,6 +18,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "customer_order")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +29,7 @@ public class Order {
     private BigDecimal totalAmount;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus status; // Enum: PENDING, COMPLETED, CANCELLED
+    private OrderStatus status;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
@@ -32,10 +38,10 @@ public class Order {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<OrderItem> items; // Lista de produtos no pedido
+    private List<OrderItem> items;
 
     @Enumerated(EnumType.STRING)
-    private PaymentStatus paymentStatus; // Enum: PENDING, PAID, FAILED
+    private PaymentStatus paymentStatus;
 
     private Date paymentDate;
 
@@ -52,7 +58,6 @@ public class Order {
                 total = total.add(item.getTotalPrice());
             }
 
-            // Aplica taxa de frete
             this.totalAmount = total.add(this.shippingFee);
         }
     }
@@ -64,85 +69,5 @@ public class Order {
 
             this.totalAmount = this.totalAmount.subtract(discount);
         }
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
-    public OrderStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(OrderStatus status) {
-        this.status = status;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
-
-    public List<OrderItem> getItems() {
-        return items;
-    }
-
-    public void setItems(List<OrderItem> items) {
-        this.items = items;
-    }
-
-    public PaymentStatus getPaymentStatus() {
-        return paymentStatus;
-    }
-
-    public void setPaymentStatus(PaymentStatus paymentStatus) {
-        this.paymentStatus = paymentStatus;
-    }
-
-    public Date getPaymentDate() {
-        return paymentDate;
-    }
-
-    public void setPaymentDate(Date paymentDate) {
-        this.paymentDate = paymentDate;
-    }
-
-    public BigDecimal getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(BigDecimal discount) {
-        this.discount = discount;
-    }
-
-    public BigDecimal getShippingFee() {
-        return shippingFee;
-    }
-
-    public void setShippingFee(BigDecimal shippingFee) {
-        this.shippingFee = shippingFee;
     }
 }

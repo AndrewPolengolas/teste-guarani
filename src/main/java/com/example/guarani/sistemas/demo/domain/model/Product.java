@@ -2,16 +2,15 @@ package com.example.guarani.sistemas.demo.domain.model;
 
 import com.example.guarani.sistemas.demo.domain.enums.Category;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "product")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +19,7 @@ public class Product {
     private String description;
     private BigDecimal price;
 
-    @Enumerated(EnumType.STRING) // Armazena o nome do enum no banco
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Category category;
 
