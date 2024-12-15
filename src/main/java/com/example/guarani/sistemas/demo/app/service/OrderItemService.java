@@ -13,6 +13,8 @@ import com.example.guarani.sistemas.demo.domain.repository.ProductRepository;
 import com.example.guarani.sistemas.demo.infra.exceptions.custom.OutOfStockException;
 import com.example.guarani.sistemas.demo.infra.exceptions.custom.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class OrderItemService {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderItemService.class);
 
     private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
@@ -38,15 +42,24 @@ public class OrderItemService {
 
     @Transactional
     public OrderItemResponseDTO createOrderItem(OrderItemRequestDTO orderItemRequestDTO, Long orderId) {
+        logger.info("Creating order item for order ID: {} and product ID: {}", orderId, orderItemRequestDTO.productId());
+
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Order not found with ID: {}", orderId);
+                    return new ResourceNotFoundException("Order not found");
+                });
 
         Product product = productRepository.findById(orderItemRequestDTO.productId())
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Product not found with ID: {}", orderItemRequestDTO.productId());
+                    return new ResourceNotFoundException("Product not found");
+                });
 
         checkOrderStatus(order.getStatus());
         checkStock(product, orderItemRequestDTO.quantity());
 
+        logger.info("Adding product '{}' (quantity: {}) to order ID: {}", product.getName(), orderItemRequestDTO.quantity(), orderId);
         OrderItem orderItem = OrderItem.builder()
                 .product(product)
                 .quantity(orderItemRequestDTO.quantity())
@@ -54,17 +67,20 @@ public class OrderItemService {
                 .build();
 
         orderItem.calculateTotalPrice();
-
         orderItem = orderItemRepository.save(orderItem);
 
-        updateOrder(order);
+        logger.info("Order item created successfully with ID: {}", orderItem.getId());
 
+        updateOrder(order);
         return orderItemMapper.toOrderItemResponseDTO(orderItem);
     }
 
     public List<OrderItemResponseDTO> getOrderItems(Long orderId) {
+        logger.info("Fetching order items for order ID: {}", orderId);
+
         List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
 
+        logger.info("Fetched {} order items for order ID: {}", orderItems.size(), orderId);
         return orderItems.stream()
                 .map(orderItemMapper::toOrderItemResponseDTO)
                 .collect(Collectors.toList());
@@ -72,31 +88,43 @@ public class OrderItemService {
 
     @Transactional
     public void deleteOrderItem(Long orderItemId) {
+        logger.info("Deleting order item with ID: {}", orderItemId);
+
         OrderItem orderItem = orderItemRepository.findById(orderItemId)
-                .orElseThrow(() -> new ResourceNotFoundException("OrderItem not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Order item not found with ID: {}", orderItemId);
+                    return new ResourceNotFoundException("OrderItem not found");
+                });
 
         orderItemRepository.delete(orderItem);
+        logger.info("Order item deleted successfully with ID: {}", orderItemId);
 
         Order order = orderItem.getOrder();
-
         updateOrder(order);
     }
 
     public void checkStock(Product product, int quantity) {
-        if (product.getStockQuantity() < quantity)
+        if (product.getStockQuantity() < quantity) {
+            logger.warn("Product '{}' is out of stock. Available: {}, Requested: {}", product.getName(), product.getStockQuantity(), quantity);
             throw new OutOfStockException("Product '" + product.getName() + "' is out of stock.");
+        }
     }
 
     public void checkOrderStatus(OrderStatus orderStatus) {
-        if (!orderStatus.equals(OrderStatus.OPEN))
+        if (!orderStatus.equals(OrderStatus.OPEN)) {
+            logger.warn("Order status '{}' is invalid for adding order items. Must be 'OPEN'.", orderStatus);
             throw new IllegalArgumentException("OrderItem cannot be added to orders with status different from OPEN.");
+        }
     }
 
     @Transactional
     public void updateOrder(Order order) {
+        logger.info("Updating total amount and discount for order ID: {}", order.getId());
+
         order.updateTotalAmount();
         order.addDiscount();
-
         orderRepository.save(order);
+
+        logger.info("Order updated successfully with ID: {}", order.getId());
     }
 }
