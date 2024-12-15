@@ -1,4 +1,4 @@
-package com.example.guarani.sistemas.demo.controller;
+package com.example.guarani.sistemas.demo.app.controller;
 
 import com.example.guarani.sistemas.demo.app.dto.product.ProductRequestDTO;
 import com.example.guarani.sistemas.demo.app.dto.product.ProductResponseDTO;
