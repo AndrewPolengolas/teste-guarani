@@ -73,10 +73,12 @@ Execute o comando para iniciar RabbitMQ e o MySQL:
    
    cd demo
    ```
-2. Os testes podem ser executados com o comando:
+2. Os testes podem ser com o plugin do jacoco, os relatoriós estarão em target/site/jacoco/index.html:
 
    ```bash
    mvn test
+   
+   mvn jacoco:report
    ```
 3. Compile o projeto:
    ```bash
