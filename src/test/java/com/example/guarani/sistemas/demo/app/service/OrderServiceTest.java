@@ -118,6 +118,7 @@ class OrderServiceTest {
 
     @Test
     void testCloseOrderByIdSuccess() {
+        // Configuração do pedido
         Order order = new Order();
         order.setId(1L);
         order.setTotalAmount(BigDecimal.valueOf(100));
@@ -140,15 +141,36 @@ class OrderServiceTest {
         OrderPaymentDTO paymentDTO = new OrderPaymentDTO("CREDIT_CARD");
         PaymentStrategy strategy = mock(PaymentStrategy.class);
 
-        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
-        when(paymentStrategies.get(paymentDTO.paymentType())).thenReturn(strategy);
+        Order savedOrder = new Order();
+        savedOrder.setId(1L);
+        savedOrder.setStatus(OrderStatus.WAITING_PAYMENT);
 
-        orderService.closeOrderById(1L, paymentDTO);
+        OrderResponseDTO responseDTO = new OrderResponseDTO(
+                1L,
+                null,
+                null,
+                BigDecimal.valueOf(100),
+                null,
+                null,
+                OrderStatus.WAITING_PAYMENT,
+                new Date()
+        );
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(orderRepository.save(order)).thenReturn(savedOrder);
+        when(paymentStrategies.get(paymentDTO.paymentType())).thenReturn(strategy);
+        when(orderMapper.toOrderResponseDTO(savedOrder)).thenReturn(responseDTO);
+
+        OrderResponseDTO result = orderService.closeOrderById(1L, paymentDTO);
 
         verify(orderRepository, times(1)).save(order);
         verify(strategy, times(1)).sendPayment(order);
-        assertEquals(OrderStatus.WAITING_PAYMENT, order.getStatus());
+        assertNotNull(result, "Result should not be null");
+        assertEquals(OrderStatus.WAITING_PAYMENT, result.status());
+        assertEquals(1L, result.id());
     }
+
+
 
     @Test
     void testUpdatePaymentSuccess() {

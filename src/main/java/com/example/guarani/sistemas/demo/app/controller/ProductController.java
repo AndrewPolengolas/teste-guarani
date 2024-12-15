@@ -5,6 +5,7 @@ import com.example.guarani.sistemas.demo.app.dto.product.ProductFilterDTO;
 import com.example.guarani.sistemas.demo.app.dto.product.ProductRequestDTO;
 import com.example.guarani.sistemas.demo.app.dto.product.ProductResponseDTO;
 import com.example.guarani.sistemas.demo.app.service.ProductService;
+import com.example.guarani.sistemas.demo.domain.enums.Category;
 import com.example.guarani.sistemas.demo.domain.model.Product;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -78,10 +80,17 @@ public class ProductController {
                             content = @Content(schema = @Schema(implementation = ProductResponseDTO.class)))
             }
     )
-    public ResponseEntity<?> getAllProducts(@RequestBody ProductFilterDTO filter) {
+    public ResponseEntity<?> getAllProducts(
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) Category category) {
+
+        ProductFilterDTO filter = new ProductFilterDTO(minPrice, maxPrice, category);
+
         List<ProductResponseDTO> products = productService.getAllProducts(filter);
         return ResponseEntity.ok().body(products);
     }
+
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
