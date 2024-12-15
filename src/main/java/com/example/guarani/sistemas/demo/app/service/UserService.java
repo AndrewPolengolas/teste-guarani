@@ -2,10 +2,12 @@ package com.example.guarani.sistemas.demo.app.service;
 
 import com.example.guarani.sistemas.demo.app.dto.auth.AuthRequestDTO;
 import com.example.guarani.sistemas.demo.domain.model.EnumRoles;
+import com.example.guarani.sistemas.demo.domain.model.Product;
 import com.example.guarani.sistemas.demo.domain.model.Role;
 import com.example.guarani.sistemas.demo.domain.model.User;
 import com.example.guarani.sistemas.demo.domain.repository.RoleRepository;
 import com.example.guarani.sistemas.demo.domain.repository.UserRepository;
+import com.example.guarani.sistemas.demo.infra.exceptions.custom.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -50,5 +53,11 @@ public class UserService {
 
     public List<User> findAllUsers(){
         return userRepository.findAll();
+    }
+
+    public void deleteUser(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        userRepository.delete(user);
     }
 }

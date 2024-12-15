@@ -9,7 +9,7 @@ import com.example.guarani.sistemas.demo.domain.model.Product;
 import com.example.guarani.sistemas.demo.domain.repository.OrderItemRepository;
 import com.example.guarani.sistemas.demo.domain.repository.OrderRepository;
 import com.example.guarani.sistemas.demo.domain.repository.ProductRepository;
-import com.example.guarani.sistemas.demo.infra.exceptions.ResourceNotFoundException;
+import com.example.guarani.sistemas.demo.infra.exceptions.custom.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

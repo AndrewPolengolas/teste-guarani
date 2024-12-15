@@ -3,13 +3,15 @@ package com.example.guarani.sistemas.demo.app.service;
 import com.example.guarani.sistemas.demo.app.mapper.OrderItemMapper;
 import com.example.guarani.sistemas.demo.app.dto.orderItem.OrderItemRequestDTO;
 import com.example.guarani.sistemas.demo.app.dto.orderItem.OrderItemResponseDTO;
+import com.example.guarani.sistemas.demo.domain.enums.OrderStatus;
 import com.example.guarani.sistemas.demo.domain.model.Order;
 import com.example.guarani.sistemas.demo.domain.model.OrderItem;
 import com.example.guarani.sistemas.demo.domain.model.Product;
 import com.example.guarani.sistemas.demo.domain.repository.OrderItemRepository;
 import com.example.guarani.sistemas.demo.domain.repository.OrderRepository;
 import com.example.guarani.sistemas.demo.domain.repository.ProductRepository;
-import com.example.guarani.sistemas.demo.infra.exceptions.ResourceNotFoundException;
+import com.example.guarani.sistemas.demo.infra.exceptions.custom.OutOfStockException;
+import com.example.guarani.sistemas.demo.infra.exceptions.custom.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,20 +44,20 @@ public class OrderItemService {
         Product product = productRepository.findById(orderItemRequestDTO.productId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
-        OrderItem orderItem = new OrderItem();
-        orderItem.setProduct(product);
-        orderItem.setQuantity(orderItemRequestDTO.quantity());
+        checkOrderStatus(order.getStatus());
+        checkStock(product, orderItemRequestDTO.quantity());
 
-        orderItem.setOrder(order);
+        OrderItem orderItem = OrderItem.builder()
+                .product(product)
+                .quantity(orderItemRequestDTO.quantity())
+                .order(order)
+                .build();
 
         orderItem.calculateTotalPrice();
 
         orderItem = orderItemRepository.save(orderItem);
 
-        order.updateTotalAmount();
-        order.addDiscount();
-
-        orderRepository.save(order);
+        updateOrder(order);
 
         return orderItemMapper.toOrderItemResponseDTO(orderItem);
     }
@@ -77,6 +79,21 @@ public class OrderItemService {
 
         Order order = orderItem.getOrder();
 
+        updateOrder(order);
+    }
+
+    public void checkStock(Product product, int quantity) {
+        if (product.getStockQuantity() < quantity)
+            throw new OutOfStockException("Product '" + product.getName() + "' is out of stock.");
+    }
+
+    public void checkOrderStatus(OrderStatus orderStatus) {
+        if (!orderStatus.equals(OrderStatus.OPEN))
+            throw new IllegalArgumentException("OrderItem cannot be added to orders with status different from OPEN.");
+    }
+
+    @Transactional
+    public void updateOrder(Order order) {
         order.updateTotalAmount();
         order.addDiscount();
 

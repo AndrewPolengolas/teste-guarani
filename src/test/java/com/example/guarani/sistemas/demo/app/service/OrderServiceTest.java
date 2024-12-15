@@ -5,9 +5,10 @@ import com.example.guarani.sistemas.demo.app.mapper.OrderMapper;
 import com.example.guarani.sistemas.demo.app.service.strategy.PaymentStrategy;
 import com.example.guarani.sistemas.demo.domain.enums.OrderStatus;
 import com.example.guarani.sistemas.demo.domain.enums.PaymentStatus;
+import com.example.guarani.sistemas.demo.domain.model.Customer;
 import com.example.guarani.sistemas.demo.domain.model.Order;
 import com.example.guarani.sistemas.demo.domain.repository.OrderRepository;
-import com.example.guarani.sistemas.demo.infra.exceptions.ResourceNotFoundException;
+import com.example.guarani.sistemas.demo.infra.exceptions.custom.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -50,7 +51,7 @@ class OrderServiceTest {
 
         OrderResponseDTO responseDTO = new OrderResponseDTO(1L, 1L, Collections.emptyList(), BigDecimal.valueOf(100), BigDecimal.valueOf(0.1), BigDecimal.valueOf(10.0), OrderStatus.OPEN, new Date());
 
-        when(orderMapper.toOrder(orderRequestDTO)).thenReturn(order);
+        when(orderMapper.toOrder(orderRequestDTO, new Customer())).thenReturn(order);
         when(orderRepository.save(order)).thenReturn(savedOrder);
         when(orderMapper.toOrderResponseDTO(savedOrder)).thenReturn(responseDTO);
 

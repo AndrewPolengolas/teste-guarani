@@ -1,11 +1,12 @@
 package com.example.guarani.sistemas.demo.app.service;
 
+import com.example.guarani.sistemas.demo.app.dto.product.ProductFilterDTO;
 import com.example.guarani.sistemas.demo.app.mapper.ProductMapper;
 import com.example.guarani.sistemas.demo.domain.model.Product;
 import com.example.guarani.sistemas.demo.app.dto.product.ProductRequestDTO;
 import com.example.guarani.sistemas.demo.app.dto.product.ProductResponseDTO;
 import com.example.guarani.sistemas.demo.domain.repository.ProductRepository;
-import com.example.guarani.sistemas.demo.infra.exceptions.ResourceNotFoundException;
+import com.example.guarani.sistemas.demo.infra.exceptions.custom.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,8 +56,21 @@ public class ProductService {
         productRepository.delete(product);
     }
 
-    public List<ProductResponseDTO> getAllProducts() {
-        List<Product> products = productRepository.findAll();
+    public List<ProductResponseDTO> getAllProducts(ProductFilterDTO filter) {
+
+        List<Product> products;
+
+        if (filter == null) {
+            products = productRepository.findAll();
+        } else {
+
+            products = productRepository.findByFilters(
+                    filter.minPrice() != null ? filter.minPrice() : null,
+                    filter.maxPrice() != null ? filter.maxPrice() : null,
+                    filter.category() != null ? filter.category().toString() : null
+            );
+        }
+
         return products.stream()
                 .map(productMapper::toProductResponse)
                 .collect(Collectors.toList());

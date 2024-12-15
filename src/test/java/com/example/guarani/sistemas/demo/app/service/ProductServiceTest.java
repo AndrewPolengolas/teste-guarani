@@ -1,12 +1,13 @@
 package com.example.guarani.sistemas.demo.app.service;
 
+import com.example.guarani.sistemas.demo.app.dto.product.ProductFilterDTO;
 import com.example.guarani.sistemas.demo.app.dto.product.ProductRequestDTO;
 import com.example.guarani.sistemas.demo.app.dto.product.ProductResponseDTO;
 import com.example.guarani.sistemas.demo.app.mapper.ProductMapper;
 import com.example.guarani.sistemas.demo.domain.enums.Category;
 import com.example.guarani.sistemas.demo.domain.model.Product;
 import com.example.guarani.sistemas.demo.domain.repository.ProductRepository;
-import com.example.guarani.sistemas.demo.infra.exceptions.ResourceNotFoundException;
+import com.example.guarani.sistemas.demo.infra.exceptions.custom.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -113,7 +114,7 @@ class ProductServiceTest {
     }
 
     @Test
-    void testGetAllProducts() {
+    void testGetAllProductsWithoutFilter() {
         Product product1 = new Product(1L, "Product 1", "Description 1", BigDecimal.TEN, Category.ELECTRONICS, 5);
         Product product2 = new Product(2L, "Product 2", "Description 2", BigDecimal.valueOf(20), Category.BOOKS, 10);
         ProductResponseDTO responseDTO1 = new ProductResponseDTO(1L, "Product 1", "Description 1", BigDecimal.TEN, 5, Category.ELECTRONICS);
@@ -123,11 +124,40 @@ class ProductServiceTest {
         when(productMapper.toProductResponse(product1)).thenReturn(responseDTO1);
         when(productMapper.toProductResponse(product2)).thenReturn(responseDTO2);
 
-        List<ProductResponseDTO> result = productService.getAllProducts();
+        ProductFilterDTO filter = null;
+        List<ProductResponseDTO> result = productService.getAllProducts(filter);
 
         assertEquals(2, result.size());
         assertTrue(result.contains(responseDTO1));
         assertTrue(result.contains(responseDTO2));
         verify(productRepository, times(1)).findAll();
+        verify(productRepository, never()).findByFilters(any(), any(), any());
     }
+
+    @Test
+    void testGetAllProductsWithFilter() {
+        ProductFilterDTO filter = new ProductFilterDTO(BigDecimal.TEN, BigDecimal.valueOf(20), Category.ELECTRONICS);
+
+        Product product = new Product(1L, "Product 1", "Description Product", BigDecimal.TEN, Category.ELECTRONICS, 5);
+        ProductResponseDTO responseDTO = new ProductResponseDTO(1L, "Product 1", "Description Product", BigDecimal.TEN, 5, Category.ELECTRONICS);
+
+        when(productRepository.findByFilters(
+                eq(filter.minPrice()),
+                eq(filter.maxPrice()),
+                eq(filter.category().name())
+        )).thenReturn(List.of(product));
+        when(productMapper.toProductResponse(product)).thenReturn(responseDTO);
+
+        List<ProductResponseDTO> result = productService.getAllProducts(filter);
+
+        assertEquals(1, result.size());
+        assertEquals(responseDTO, result.get(0));
+        verify(productRepository, times(1)).findByFilters(
+                eq(filter.minPrice()),
+                eq(filter.maxPrice()),
+                eq(filter.category().name())
+        );
+        verify(productRepository, never()).findAll();
+    }
+
 }

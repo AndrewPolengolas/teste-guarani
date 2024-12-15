@@ -3,6 +3,7 @@ package com.example.guarani.sistemas.demo.domain.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,8 +32,7 @@ public class OrderItem {
     private int quantity;
     private BigDecimal totalPrice;
 
-    public BigDecimal calculateTotalPrice() {
+    public void calculateTotalPrice() {
         this.totalPrice = this.product.getPrice().multiply(BigDecimal.valueOf(quantity));
-        return this.totalPrice;
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -77,5 +78,21 @@ public class AuthController {
     public ResponseEntity<?> listUsers() {
         List<User> users = userService.findAllUsers();
         return ResponseEntity.ok(users);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @Operation(
+            summary = "Delete a user",
+            description = "Deletes a user identified by its ID. Requires ADMIN permissions.",
+            security = @SecurityRequirement(name = "Bearer Authentication"),
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "User successfully deleted"),
+                    @ApiResponse(responseCode = "404", description = "User not found")
+            }
+    )
+    public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }

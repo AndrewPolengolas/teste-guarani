@@ -1,9 +1,13 @@
 package com.example.guarani.sistemas.demo.app.controller;
 
+import com.example.guarani.sistemas.demo.app.dto.order.OrderResponseDTO;
+import com.example.guarani.sistemas.demo.app.dto.product.ProductFilterDTO;
 import com.example.guarani.sistemas.demo.app.dto.product.ProductRequestDTO;
 import com.example.guarani.sistemas.demo.app.dto.product.ProductResponseDTO;
 import com.example.guarani.sistemas.demo.app.service.ProductService;
+import com.example.guarani.sistemas.demo.domain.model.Product;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -67,16 +71,16 @@ public class ProductController {
     @PreAuthorize("hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_OPERATOR')")
     @Operation(
             summary = "Get all products",
-            description = "Retrieves a list of all products. Requires ADMIN or OPERATOR permissions.",
+            description = "Retrieves a list of all products based on the provided filter. Requires ADMIN or OPERATOR permissions.",
             security = @SecurityRequirement(name = "Bearer Authentication"),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of products",
+                    @ApiResponse(responseCode = "200", description = "Successfully retrieved the filtered list of products",
                             content = @Content(schema = @Schema(implementation = ProductResponseDTO.class)))
             }
     )
-    public ResponseEntity<List<ProductResponseDTO>> getAllProducts() {
-        List<ProductResponseDTO> products = productService.getAllProducts();
-        return ResponseEntity.ok(products);
+    public ResponseEntity<?> getAllProducts(@RequestBody ProductFilterDTO filter) {
+        List<ProductResponseDTO> products = productService.getAllProducts(filter);
+        return ResponseEntity.ok().body(products);
     }
 
     @PutMapping("/{id}")
