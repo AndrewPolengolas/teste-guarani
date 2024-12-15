@@ -74,5 +74,12 @@ public class OrderItemService {
                 .orElseThrow(() -> new ResourceNotFoundException("OrderItem not found"));
 
         orderItemRepository.delete(orderItem);
+
+        Order order = orderItem.getOrder();
+
+        order.updateTotalAmount();
+        order.addDiscount();
+
+        orderRepository.save(order);
     }
 }

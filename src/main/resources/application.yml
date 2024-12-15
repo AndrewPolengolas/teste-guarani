@@ -1,4 +1,7 @@
 spring:
+  sql:
+    init:
+      mode: always
   application:
     name: teste-guarani
   datasource:
@@ -18,3 +21,14 @@ spring:
     port: 5672
     username: user
     password: password
+
+jwt:
+  public:
+    key: classpath:public.key
+  private:
+    key: classpath:private.key
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+
