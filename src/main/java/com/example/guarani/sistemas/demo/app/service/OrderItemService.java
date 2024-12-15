@@ -53,6 +53,7 @@ public class OrderItemService {
         orderItem = orderItemRepository.save(orderItem);
 
         order.updateTotalAmount();
+        order.addDiscount();
 
         orderRepository.save(order);
 
@@ -73,5 +74,12 @@ public class OrderItemService {
                 .orElseThrow(() -> new ResourceNotFoundException("OrderItem not found"));
 
         orderItemRepository.delete(orderItem);
+
+        Order order = orderItem.getOrder();
+
+        order.updateTotalAmount();
+        order.addDiscount();
+
+        orderRepository.save(order);
     }
 }

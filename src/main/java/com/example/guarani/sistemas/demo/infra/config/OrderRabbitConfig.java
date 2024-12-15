@@ -57,12 +57,13 @@ public class OrderRabbitConfig {
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(jackson2JsonMessageConverter());
+        rabbitTemplate.setMessageConverter(messageConverter());
         return rabbitTemplate;
     }
 
     @Bean
-    public MessageConverter jackson2JsonMessageConverter() {
-        return new Jackson2JsonMessageConverter(new ObjectMapper());
+    public MessageConverter messageConverter() {
+        return new Jackson2JsonMessageConverter(new ObjectMapper()
+                .findAndRegisterModules()); // Inclui suporte para datas no formato Unix
     }
 }
