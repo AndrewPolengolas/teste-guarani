@@ -24,7 +24,7 @@ services:
       RABBITMQ_DEFAULT_PASS: password
     ports:
       - "5672:5672"   # Porta para comunicação do RabbitMQ
-      - "15672:15672" # Porta para o painel de administração do RabbitMQ (web UI)
+      - "15672:15672" # Porta para o painel de administração do RabbitMQ
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
