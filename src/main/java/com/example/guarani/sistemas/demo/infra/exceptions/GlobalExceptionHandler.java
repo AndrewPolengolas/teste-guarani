@@ -1,5 +1,7 @@
 package com.example.guarani.sistemas.demo.infra.exceptions;
 
+import com.example.guarani.sistemas.demo.infra.exceptions.custom.OutOfStockException;
+import com.example.guarani.sistemas.demo.infra.exceptions.custom.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -24,24 +26,49 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, Object> errorDetails = new HashMap<>();
         StringBuilder errorMessages = new StringBuilder();
+
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
             errorMessages.append(error.getField())
                     .append(": ")
-                    .append(error.getDefaultMessage());
+                    .append(error.getDefaultMessage())
+                    .append("; ");
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("Validation failed: " + errorMessages.toString());
+
+        errorDetails.put("timestamp", LocalDateTime.now());
+        errorDetails.put("message", "Validation failed: " + errorMessages.toString().trim());
+        errorDetails.put("status", HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<Map<String, Object>> handleGlobalException(Exception ex) {
-//        Map<String, Object> errorDetails = new HashMap<>();
-//        errorDetails.put("timestamp", LocalDateTime.now());
-//        errorDetails.put("message", "An unexpected error occurred");
-//        errorDetails.put("details", ex.getMessage());
-//        errorDetails.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-//        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalArgumentException(IllegalArgumentException ex) {
+        Map<String, Object> errorDetails = new HashMap<>();
+        errorDetails.put("timestamp", LocalDateTime.now());
+        errorDetails.put("message", ex.getMessage());
+        errorDetails.put("status", HttpStatus.UNPROCESSABLE_ENTITY.value());
+        return new ResponseEntity<>(errorDetails, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleGlobalException(Exception ex) {
+        Map<String, Object> errorDetails = new HashMap<>();
+        errorDetails.put("timestamp", LocalDateTime.now());
+        errorDetails.put("message", "An unexpected error occurred");
+        errorDetails.put("details", ex.getMessage());
+        errorDetails.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(OutOfStockException.class)
+    public ResponseEntity<Map<String, Object>> handleOutOfStockException(OutOfStockException ex) {
+        Map<String, Object> errorDetails = new HashMap<>();
+        errorDetails.put("timestamp", LocalDateTime.now());
+        errorDetails.put("error", "OutOfStock");
+        errorDetails.put("message", ex.getMessage());
+        errorDetails.put("status", HttpStatus.CONFLICT.value());
+        return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
+    }
 }

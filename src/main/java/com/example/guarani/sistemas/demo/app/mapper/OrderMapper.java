@@ -19,14 +19,12 @@ public class OrderMapper {
         this.orderItemMapper = orderItemMapper;
     }
 
-    public Order toOrder(OrderRequestDTO orderRequestDTO) {
-        Order order = new Order();
-        order.setCustomer(new Customer());
-        order.getCustomer().setId(orderRequestDTO.customerId());
-        order.setDiscount(orderRequestDTO.discount());
-        order.setShippingFee(orderRequestDTO.shippingFee());
-
-        return order;
+    public Order toOrder(OrderRequestDTO orderRequestDTO, Customer customer) {
+        return Order.builder()
+                .customer(customer)
+                .discount(orderRequestDTO.discount())
+                .shippingFee(orderRequestDTO.shippingFee())
+                .build();
     }
 
     public OrderResponseDTO toOrderResponseDTO(Order order) {

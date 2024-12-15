@@ -6,7 +6,7 @@ import com.example.guarani.sistemas.demo.app.dto.customer.CustomerResponseDTO;
 import com.example.guarani.sistemas.demo.app.mapper.CustomerMapper;
 import com.example.guarani.sistemas.demo.domain.model.Customer;
 import com.example.guarani.sistemas.demo.domain.repository.CustomerRepository;
-import com.example.guarani.sistemas.demo.infra.exceptions.ResourceNotFoundException;
+import com.example.guarani.sistemas.demo.infra.exceptions.custom.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

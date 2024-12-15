@@ -24,4 +24,12 @@ public class Product {
     private Category category;
 
     private int stockQuantity;
+
+    public void updateStock(int quantity){
+        if (quantity <= this.stockQuantity){
+            this.stockQuantity = this.stockQuantity - quantity;
+        }else {
+            throw new IllegalArgumentException("There are not enough items in stock.");
+        }
+    }
 }

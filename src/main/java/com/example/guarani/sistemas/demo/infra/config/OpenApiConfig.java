@@ -12,8 +12,8 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("API de Gerenciamento de Pedidos")
+                        .title("Guarani Sistemas APIs")
                         .version("1.0")
-                        .description("API RESTful para gerenciamento de pedidos e produtos."));
+                        .description("RESTful API for order and product management"));
     }
 }
