@@ -7,7 +7,11 @@ import com.example.guarani.sistemas.demo.domain.enums.OrderStatus;
 import com.example.guarani.sistemas.demo.domain.enums.PaymentStatus;
 import com.example.guarani.sistemas.demo.domain.model.Customer;
 import com.example.guarani.sistemas.demo.domain.model.Order;
+import com.example.guarani.sistemas.demo.domain.model.OrderItem;
+import com.example.guarani.sistemas.demo.domain.model.Product;
+import com.example.guarani.sistemas.demo.domain.repository.CustomerRepository;
 import com.example.guarani.sistemas.demo.domain.repository.OrderRepository;
+import com.example.guarani.sistemas.demo.domain.repository.ProductRepository;
 import com.example.guarani.sistemas.demo.infra.exceptions.custom.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +36,12 @@ class OrderServiceTest {
     @Mock
     private Map<String, PaymentStrategy> paymentStrategies;
 
+    @Mock
+    private ProductRepository productRepository;
+
+    @Mock
+    private CustomerRepository customerRepository;
+
     @InjectMocks
     private OrderService orderService;
 
@@ -46,12 +56,32 @@ class OrderServiceTest {
         Order order = new Order();
         order.setStatus(OrderStatus.OPEN);
 
+        Customer customer = Customer.builder()
+                .name("Test")
+                .build();
+
         Order savedOrder = new Order();
         savedOrder.setId(1L);
 
+        Product product = new Product();
+        product.setId(1L);
+        product.setStockQuantity(100);
+        product.setPrice(BigDecimal.TEN);
+
+        OrderItem orderItem = OrderItem.builder()
+                .product(product)
+                .quantity(2)
+                .build();
+
+        orderItem.calculateTotalPrice();
+
+        order.setItems(List.of(orderItem));
+
         OrderResponseDTO responseDTO = new OrderResponseDTO(1L, 1L, Collections.emptyList(), BigDecimal.valueOf(100), BigDecimal.valueOf(0.1), BigDecimal.valueOf(10.0), OrderStatus.OPEN, new Date());
 
-        when(orderMapper.toOrder(orderRequestDTO, new Customer())).thenReturn(order);
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+        when(orderMapper.toOrder(orderRequestDTO, customer)).thenReturn(order);
         when(orderRepository.save(order)).thenReturn(savedOrder);
         when(orderMapper.toOrderResponseDTO(savedOrder)).thenReturn(responseDTO);
 
@@ -93,6 +123,20 @@ class OrderServiceTest {
         order.setTotalAmount(BigDecimal.valueOf(100));
         order.setStatus(OrderStatus.OPEN);
 
+        Product product = new Product();
+        product.setId(1L);
+        product.setStockQuantity(100);
+        product.setPrice(BigDecimal.TEN);
+
+        OrderItem orderItem = OrderItem.builder()
+                .product(product)
+                .quantity(2)
+                .build();
+
+        orderItem.calculateTotalPrice();
+
+        order.setItems(List.of(orderItem));
+
         OrderPaymentDTO paymentDTO = new OrderPaymentDTO("CREDIT_CARD");
         PaymentStrategy strategy = mock(PaymentStrategy.class);
 
@@ -113,10 +157,24 @@ class OrderServiceTest {
         message.setSuccess(true);
         message.setPaymentDate(new Date());
 
+        Product product = new Product();
+        product.setId(1L);
+        product.setStockQuantity(100);
+        product.setPrice(BigDecimal.TEN);
+
+        OrderItem orderItem = OrderItem.builder()
+                .product(product)
+                .quantity(2)
+                .build();
+
+        orderItem.calculateTotalPrice();
+
         Order order = new Order();
         order.setId(1L);
+        order.setItems(List.of(orderItem));
         order.setStatus(OrderStatus.WAITING_PAYMENT);
 
+        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
 
         orderService.updatePayment(message);

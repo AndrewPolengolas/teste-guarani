@@ -3,6 +3,7 @@ package com.example.guarani.sistemas.demo.app.service;
 import com.example.guarani.sistemas.demo.app.dto.orderItem.OrderItemRequestDTO;
 import com.example.guarani.sistemas.demo.app.dto.orderItem.OrderItemResponseDTO;
 import com.example.guarani.sistemas.demo.app.mapper.OrderItemMapper;
+import com.example.guarani.sistemas.demo.domain.enums.OrderStatus;
 import com.example.guarani.sistemas.demo.domain.model.Order;
 import com.example.guarani.sistemas.demo.domain.model.OrderItem;
 import com.example.guarani.sistemas.demo.domain.model.Product;
@@ -49,8 +50,10 @@ class OrderItemServiceTest {
     void testCreateOrderItemSuccess() {
         OrderItemRequestDTO requestDTO = new OrderItemRequestDTO(1L, 2);
         Order order = new Order();
+        order.setStatus(OrderStatus.OPEN);
         Product product = new Product();
         product.setId(1L);
+        product.setStockQuantity(100);
         product.setPrice(BigDecimal.TEN);
         OrderItem orderItem = new OrderItem();
         orderItem.setProduct(product);
