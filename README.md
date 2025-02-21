@@ -39,7 +39,7 @@ Este projeto é uma API RESTful para um sistema de gerenciamento de pedidos de u
    - Recalcula automaticamente ao modificar itens do pedido.
 
 6. **Documentação:**
-   - Documentação automática gerada com Swagger.
+   - Documentação automática gerada com Swagger.  
    - Acesse via [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html).
 
 ## Configuração do Ambiente
