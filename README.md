@@ -9,7 +9,7 @@ Este projeto é uma API RESTful para um sistema de gerenciamento de pedidos de u
 
 - **Linguagem:** Java 17
 - **Framework:** Spring Boot (versão 3.4.0)
-- **Banco de Dados:** MySQL 8
+- **Banco de Dados:** MySQL 8 
 - **Mensageria:** RabbitMQ
 - **Segurança:** Spring Security (OAuth2 e JWT)
 - **Documentação da API:** Swagger/OpenAPI
